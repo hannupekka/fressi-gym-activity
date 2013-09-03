@@ -5,7 +5,7 @@ Fetches, parses and formats gym activity for [Fressi](http://www.fressi.fi/) gym
 Requirements
 ------------
  * Fressi web reservation credentials for http://fressi.bypolar.fi/
- * python
+ * python (created & tested with 2.6.6)
   * [BeautifulSoup 4](http://www.crummy.com/software/BeautifulSoup/)
   * [mechanize](http://wwwsearch.sourceforge.net/mechanize/)
 

@@ -7,6 +7,15 @@ from optparse import OptionParser, OptionGroup
 from datetime import date
 
 def login(options):
+	""" Used to login and get training data
+
+	Args:
+		options: an object containing values for all of your command line options
+
+	Return:
+		data: list of objects that BeautifulSoup found
+	"""
+
 	# New mechanize browser
 	br = Browser()
 	# Ignore robots.txt
@@ -29,7 +38,7 @@ def login(options):
 	try:
 		data = br.open(data_page_url).read()
 	except:
-		print "Could not login, please check your login credentials"
+		print "Could not login, please check your login credentials. Also make sure your character encoding is set to UTF-8"
 		return False
 
 	# Make soup from data
@@ -40,14 +49,19 @@ def login(options):
 
 	if not data:
 		print "Could not parse training activity"
-		data = False
+		return False
 
 	return data
 
 def parse(data, options):
-	if not data:
-		return False
+	""" Parses and outputs training data
 
+	Args:
+		data: list of objects BeautifulSoup found
+		options: an object containing values for all of your command line options
+	"""
+			
+	# Start output with correct formatting
 	if options.format_csv:
 		output = '"date","activity"\n'
 	elif options.format_html:
@@ -63,18 +77,23 @@ def parse(data, options):
 		<table id="result">	
 """
 	duplicates = []
+	# Parse data
 	for act in data:
+		# Get date for activity
 		(day, month, year) = act.find('h5').text.strip().split(' ')[0].split('.')
 
+		# Create new date object and get actitivy type
 		act_date = date(int(year), int(month), int(day))
 		act_type = act.find('h3').text.strip()
 
+		# Skip duplicates by default. Otherwise save dates for comparison
 		if not options.duplicates:
 			if act_date.__str__() in duplicates:
 				continue
 			else:
 				duplicates.append(act_date.__str__())
 
+		# Format row
 		if options.format_csv:
 			output += '"%s","%s"\n' % (act_date, act_type)
 		elif options.format_html:
@@ -82,6 +101,7 @@ def parse(data, options):
 		else:
 			print "%s\t%s" % (act_date, act_type)			
 
+	# Finalize formatting and print output
 	if options.format_csv:
 		print output
 	elif options.format_html:
@@ -89,6 +109,9 @@ def parse(data, options):
 		print output
 
 def main():
+	""" Collects command line arguments from user """
+
+	# Create new option parser and add options
 	parser = OptionParser()
 	parser.add_option("-u", "--username", dest="username", help="username to log in with", type="string")
 	parser.add_option("-p", "--password", dest="password", help="password to go with username", type="string")
@@ -100,8 +123,10 @@ def main():
 	group.add_option("-d", "--duplicates", action="store_true", dest="duplicates", help="show multiple entries for same day")
 	parser.add_option_group(group)
 
+	# Read options and arguments
 	(options, args) = parser.parse_args()
 
+	# Basic validation for options
 	if not options.username:
 		parser.error('username is required')
 	if not options.password:
@@ -109,7 +134,10 @@ def main():
 	if options.format_html and options.format_csv:
 		parser.error('use either --html or --csv')
 
+	# Log in and get data
 	data = login(options)
+
+	# Parse, format and output data
 	parse(data, options)
 
 if __name__ == '__main__':
