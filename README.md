@@ -31,6 +31,17 @@ Options:
     -d, --duplicates    show multiple entries for same day
 ```
 
+Configuration file
+------------------
+It is possible to read authentication data from config file instead of providing them as parameters.
+Configuration file should be named as ```.fressi.ini``` and placed in the same directory as the script.
+It should be formatted as follows:
+```
+[auth]  
+username = your_username  
+password = your_password
+```
+
 Examples
 --------
 1. Generating HTML page from all activities

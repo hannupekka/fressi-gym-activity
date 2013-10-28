@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 from mechanize import Browser
 from optparse import OptionParser, OptionGroup
 from datetime import date
+from ConfigParser import SafeConfigParser
 
 def login(options):
 	""" Used to login and get training data
@@ -126,11 +127,24 @@ def main():
 	# Read options and arguments
 	(options, args) = parser.parse_args()
 
+	cparser = SafeConfigParser()
+	cparser.read('.fressi.ini')
+
+	config = {}
+	config['username'] = cparser.get('auth', 'username')
+	config['password'] = cparser.get('auth', 'password')
+
 	# Basic validation for options
 	if not options.username:
-		parser.error('username is required')
+		if config['username']:
+			options.username = config['username']
+		else:
+			parser.error('username is required')
 	if not options.password:
-		parser.error('password is required')
+		if config['password']:
+			options.password = config['password']
+		else:
+			parser.error('password is required')
 	if options.format_html and options.format_csv:
 		parser.error('use either --html or --csv')
 
