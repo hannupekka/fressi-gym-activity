@@ -22,6 +22,8 @@ Options:
                         username to log in with
   -p PASSWORD, --password=PASSWORD
                         password to go with username
+  -f DATE_FORMAT, --date_format=DATE_FORMAT
+                        date format                        
   --csv                 format output to CSV
   --html                format output to HTML
 
@@ -39,7 +41,10 @@ It should be formatted as follows:
 ```
 [auth]  
 username = your_username  
-password = your_password
+password = your_password  
+  
+[formatting]  
+date_format = %Y-%m-%d
 ```
 
 Examples

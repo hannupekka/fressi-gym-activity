@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 from mechanize import Browser
 from optparse import OptionParser, OptionGroup
 from datetime import date
-from ConfigParser import SafeConfigParser, NoSectionError, NoOptionError
+from ConfigParser import RawConfigParser, NoSectionError, NoOptionError
 
 def login(options):
 	""" Used to login and get training data
@@ -94,6 +94,11 @@ def parse(data, options):
 			else:
 				duplicates.append(act_date.__str__())
 
+		try:
+			act_date = act_date.strftime(options.date_format)
+		except AttributeError:
+			pass
+
 		# Format row
 		if options.format_csv:
 			output += '"%s","%s"\n' % (act_date, act_type)
@@ -116,6 +121,7 @@ def main():
 	parser = OptionParser()
 	parser.add_option("-u", "--username", dest="username", help="username to log in with", type="string")
 	parser.add_option("-p", "--password", dest="password", help="password to go with username", type="string")
+	parser.add_option("-f", "--date_format", dest="date_format", help="date format", type="string")
 	parser.add_option("--csv", action="store_true", dest="format_csv", help="format output to CSV")
 	parser.add_option("--html", action="store_true", dest="format_html", help="format output to HTML ")
 
@@ -127,17 +133,16 @@ def main():
 	# Read options and arguments
 	(options, args) = parser.parse_args()
 
-	config = {}
 	try:
-		cparser = SafeConfigParser()
+		cparser = RawConfigParser()
 		cparser.read('.fressi.ini')
 
-		config['username'] = cparser.get('auth', 'username')
-		config['password'] = cparser.get('auth', 'password')
-		if config['username']:
-			options.username = config['username']
-		if config['password']:
-			options.password = config['password']			
+		if cparser.get('auth', 'username'):
+			options.username = cparser.get('auth', 'username')
+		if cparser.get('auth', 'password'):
+			options.password = cparser.get('auth', 'password')
+		if cparser.get('formatting', 'date_format'):
+			options.date_format = cparser.get('formatting', 'date_format')
 	except NoSectionError:
 		pass
 	except NoOptionError:
