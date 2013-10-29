@@ -65,5 +65,6 @@ Troubleshooting
 ----------------
 1. Can't login
 
-  If your credentials contains for example scandinavic characters, login may fail if your terminal/connection character set is not UTF-8.
+  If your credentials contains for example scandinavic characters, login may fail if your terminal/connection charater set is not UTF-8.  
+  Use configuration file to prevent this.
 
