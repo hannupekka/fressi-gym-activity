@@ -95,7 +95,8 @@ def parse(data, options):
 				duplicates.append(act_date.__str__())
 
 		try:
-			act_date = act_date.strftime(options.date_format)
+			if options.date_format:
+				act_date = act_date.strftime(options.date_format)
 		except AttributeError:
 			pass
 
