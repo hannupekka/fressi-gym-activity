@@ -60,6 +60,10 @@ Examples
 3. Getting list of activies for autumn 2012 sorted ascending
 
   ```python fressi.py -u username -p password | grep -E '2012-(08|09|10)' | sort```
+
+4. Gettings the most active months, using config for auth
+
+  ```python fressi.py -f %Y-%m | uniq -c | sort -gr```
   
 Troubleshooting
 ----------------
