@@ -52,7 +52,8 @@ def login(options):
 		print "Could not parse training activity"
 		return False
 
-	return data
+	# Format and output data
+	parse(data, options)
 
 def parse(data, options):
 	""" Parses and outputs training data
@@ -61,7 +62,10 @@ def parse(data, options):
 		data: list of objects BeautifulSoup found
 		options: an object containing values for all of your command line options
 	"""
-			
+	
+	# Start output	
+	output = ''
+
 	# Start output with correct formatting
 	if options.format_csv:
 		output = '"date","activity"\n'
@@ -98,7 +102,8 @@ def parse(data, options):
 			if options.date_format:
 				act_date = act_date.strftime(options.date_format)
 		except AttributeError:
-			pass
+			print "Invalid date format"
+			return False
 
 		# Format row
 		if options.format_csv:
@@ -109,11 +114,10 @@ def parse(data, options):
 			print "%s\t%s" % (act_date, act_type)			
 
 	# Finalize formatting and print output
-	if options.format_csv:
-		print output
-	elif options.format_html:
+	if options.format_html:
 		output += "</table></body></html>"
-		print output
+	
+	print output
 
 def main():
 	""" Collects command line arguments from user """
@@ -138,14 +142,14 @@ def main():
 		cparser = RawConfigParser()
 		cparser.read('.fressi.ini')
 
-		if cparser.get('auth', 'username'):
+		if cparser.has_section('auth') and cparser.has_option('auth', 'username'):
 			options.username = cparser.get('auth', 'username')
-		if cparser.get('auth', 'password'):
+		if cparser.has_section('auth') and cparser.has_option('auth', 'password'):
 			options.password = cparser.get('auth', 'password')
-		if cparser.get('formatting', 'date_format'):
+		if cparser.has_section('formatting') and cparser.has_option('formatting', 'date_format'):
 			options.date_format = cparser.get('formatting', 'date_format')
 	except NoSectionError:
-		pass
+		parser.error('invalid configuration file')
 	except NoOptionError:
 		parser.error('invalid configuration format')
 
@@ -158,10 +162,7 @@ def main():
 		parser.error('use either --html or --csv')
 
 	# Log in and get data
-	data = login(options)
-
-	# Parse, format and output data
-	parse(data, options)
+	login(options)
 
 if __name__ == '__main__':
 	main()
