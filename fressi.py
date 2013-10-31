@@ -116,8 +116,9 @@ def parse(data, options):
 	# Finalize formatting and print output
 	if options.format_html:
 		output += "</table></body></html>"
-	
-	print output
+		print output
+	elif options.format_csv:
+		print output.rstrip('\n')
 
 def main():
 	""" Collects command line arguments from user """
